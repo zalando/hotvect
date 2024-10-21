@@ -13,7 +13,7 @@ long_description = (this_directory / "README.rst").read_text()
 required_dependencies = (this_directory / "requirements.txt").read_text().splitlines()
 
 
-HOTVECT_VERSION = "8.0.1"
+HOTVECT_VERSION = "8.0.2"
 
 
 # Copy the hotvect jar so that it can be included in the build
