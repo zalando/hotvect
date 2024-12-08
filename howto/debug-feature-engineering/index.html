@@ -1,0 +1,737 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="canonical" href="https://hotvect.docs.zalando.net/howto/debug-feature-engineering/">
+      
+      <link rel="icon" href="../../hot_pepper.png">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-7.1.4">
+    
+    
+      
+        <title>Debug feature engineering code - hotvect</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.bde7dde4.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ef6f36e2.min.css">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
+      
+    
+    
+    
+    
+      
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
+  
+    
+    <script>function __prefix(e){return new URL("../..",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#how-to-debug-feature-engineering-code-algorithm-jars" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="hotvect" class="md-header__button md-logo" aria-label="hotvect" data-md-component="logo">
+      
+  <img src="../../hot_pepper.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            hotvect
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Debug feature engineering code
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        
+<a href="https://github.bus.zalan.do/Lounge-Data/hotvect/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GHE
+  </div>
+</a>
+      </div>
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="hotvect" class="md-nav__button md-logo" aria-label="hotvect" data-md-component="logo">
+      
+  <img src="../../hot_pepper.png" alt="logo">
+
+    </a>
+    hotvect
+  </label>
+  
+    <div class="md-nav__source">
+      
+<a href="https://github.bus.zalan.do/Lounge-Data/hotvect/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GHE
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        Getting Started
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../highlevel/motivation/" class="md-nav__link">
+        Key differences with other similar frameworks
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../highlevel/concepts/" class="md-nav__link">
+        Concepts and terminology
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+      
+      <label class="md-nav__link" for="__nav_4">
+        Migration Guide
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Migration Guide" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          Migration Guide
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../migration-guides/migration-from-v7-to-v8/" class="md-nav__link">
+        Migration from v7 to v8
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../migration-guides/migration-from-v6-to-v7/" class="md-nav__link">
+        Migration from v6 to v7
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../migration-guides/migration-from-v4-to-v6/" class="md-nav__link">
+        Migration from v4 to v6
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" checked>
+      
+      <label class="md-nav__link" for="__nav_5">
+        How to
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="How to" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          How to
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../use-previous-outputs/" class="md-nav__link">
+        Use previously generated parameters and other outputs in the pipeline
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../develop-a-re-ranker-with-hotvect/" class="md-nav__link">
+        Develop algorithms with hotvect
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Debug feature engineering code
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Debug feature engineering code
+      </a>
+      
+        
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-do-you-mean-with-feature-engineering-code-algorithm-jars" class="md-nav__link">
+    What do you mean with feature engineering code (algorithm jars)?
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why-do-i-need-to-know-how-to-debug-feature-engineering-code" class="md-nav__link">
+    Why do I need to know how to debug feature engineering code?
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prerequisite-knowledge" class="md-nav__link">
+    Prerequisite knowledge
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-debug" class="md-nav__link">
+    How to debug
+  </a>
+  
+    <nav class="md-nav" aria-label="How to debug">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#locating-the-hotvect-offline-util-jar" class="md-nav__link">
+    Locating the hotvect-offline-util jar
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#running-the-algorithm-jar" class="md-nav__link">
+    Running the algorithm jar
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#debugging-the-algorithm-jar" class="md-nav__link">
+    Debugging the algorithm jar
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../run-and-compare-feature-audits/" class="md-nav__link">
+        Run and compare feature audits
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../run-udf-on-sagemaker/" class="md-nav__link">
+        Run User Defined Functions on sagemaker
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dump-available-feature-transformations/" class="md-nav__link">
+        Dump available transformation metadata
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../faq/" class="md-nav__link">
+        FAQ
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-do-you-mean-with-feature-engineering-code-algorithm-jars" class="md-nav__link">
+    What do you mean with feature engineering code (algorithm jars)?
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why-do-i-need-to-know-how-to-debug-feature-engineering-code" class="md-nav__link">
+    Why do I need to know how to debug feature engineering code?
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prerequisite-knowledge" class="md-nav__link">
+    Prerequisite knowledge
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-debug" class="md-nav__link">
+    How to debug
+  </a>
+  
+    <nav class="md-nav" aria-label="How to debug">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#locating-the-hotvect-offline-util-jar" class="md-nav__link">
+    Locating the hotvect-offline-util jar
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#running-the-algorithm-jar" class="md-nav__link">
+    Running the algorithm jar
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#debugging-the-algorithm-jar" class="md-nav__link">
+    Debugging the algorithm jar
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.bus.zalan.do/Lounge-Data/hotvect/edit/main/docs/howto/debug-feature-engineering.md" title="Edit this page" class="md-content__button md-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
+                  </a>
+                
+                
+                <h1 id="how-to-debug-feature-engineering-code-algorithm-jars">How to: Debug feature engineering code (algorithm jars)<a class="headerlink" href="#how-to-debug-feature-engineering-code-algorithm-jars" title="Permanent link">&para;</a></h1>
+<h2 id="what-do-you-mean-with-feature-engineering-code-algorithm-jars">What do you mean with feature engineering code (algorithm jars)?<a class="headerlink" href="#what-do-you-mean-with-feature-engineering-code-algorithm-jars" title="Permanent link">&para;</a></h2>
+<p>In hotvect, the logic for calculating feature values are written in the &ldquo;algorithm jars&rdquo;, which are algorithm packages that can be deployed on business applications.</p>
+<h2 id="why-do-i-need-to-know-how-to-debug-feature-engineering-code">Why do I need to know how to debug feature engineering code?<a class="headerlink" href="#why-do-i-need-to-know-how-to-debug-feature-engineering-code" title="Permanent link">&para;</a></h2>
+<p>You can unit test code in the algorithm jar like any other code, but sometimes issues are data dependent (they only happen with certain data). For such cases, it&rsquo;s useful to be able to run the algorithm jar on a large data set, and debug the code when the error occurs.</p>
+<h2 id="prerequisite-knowledge">Prerequisite knowledge<a class="headerlink" href="#prerequisite-knowledge" title="Permanent link">&para;</a></h2>
+<p>Most Java applications work by putting your code in the &ldquo;classpath&rdquo; (e.g. <code>java -cp myjar.jar com.mycompany.MyClass</code>). Hotvect works slightly different. Instead of the algorithm jar being part of the class path when the JVM is launched, it is loaded dynamically by hotvect using the command line option <code>--algorithm-jar</code>. This is similar to how frameworks like Spark, Tomcat works. This means that you cannot debug the algorithm jar by running it directly. Instead, you need to run it using the hotvect-offline-util jar, which is a command line tool for running hotvect algorithms. </p>
+<h2 id="how-to-debug">How to debug<a class="headerlink" href="#how-to-debug" title="Permanent link">&para;</a></h2>
+<h3 id="locating-the-hotvect-offline-util-jar">Locating the hotvect-offline-util jar<a class="headerlink" href="#locating-the-hotvect-offline-util-jar" title="Permanent link">&para;</a></h3>
+<p>The hotvect-offline-util jar is located in the maven repository. You can download it from the maven repository, or if you have the python library installed, you can also use the jar that is bundled with it. To locate the bundled jar, execute the following python code:</p>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">hotvect.hotvectjar</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">hotvect</span><span class="o">.</span><span class="n">hotvectjar</span><span class="o">.</span><span class="n">HOTVECT_JAR_PATH</span>
+<span class="n">PosixPath</span><span class="p">(</span><span class="s1">&#39;/Users/abcdef/hotvect/hotvectjar/hotvect-offline-util-x.y.z-jar-with-dependencies.jar&#39;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="running-the-algorithm-jar">Running the algorithm jar<a class="headerlink" href="#running-the-algorithm-jar" title="Permanent link">&para;</a></h3>
+<p>Once you have located the hotvect-offline-util jar, you can run the algorithm jar as follows:
+<div class="highlight"><pre><span></span><code>java<span class="w"> </span>-cp<span class="w"> </span>&lt;path-to-hotvect-offline-util-jar&gt;/hotvect-offline-util-x.y.z-jar-with-dependencies.jar<span class="w"> </span><span class="se">\</span>
+-Xmx32g<span class="w"> </span>-XX:+ExitOnOutOfMemoryError<span class="w"> </span><span class="se">\</span>
+com.hotvect.offlineutils.commandline.Main<span class="w"> </span><span class="se">\</span>
+--algorithm-jar<span class="w"> </span>&lt;path-to-algorithm-jar&gt;/my-algorithm-a.b.c.jar<span class="w"> </span><span class="se">\</span>
+--algorithm-definition<span class="w"> </span>&lt;my-algorithm-name&gt;<span class="w"> </span><span class="se">\</span>
+--meta-data<span class="w"> </span>&lt;path-to-write-metadata-output&gt;<span class="w"> </span><span class="se">\</span>
+--encode<span class="w"> </span><span class="se">\</span>
+--source<span class="w"> </span>&lt;path-to-dataset&gt;<span class="w"> </span><span class="se">\</span>
+--dest<span class="w"> </span>&lt;path-to-write-output&gt;<span class="w"> </span><span class="se">\</span>
+--parameters<span class="w"> </span>&lt;path-to-parameter-files&gt;
+</code></pre></div></p>
+<p>The parameters are as follows:
+ - <code>--algorithm-jar</code>: The path to the algorithm jar
+ - <code>--algorithm-definition</code>: The name of the algorithm. Hotvect uses this to locate the correct algorithm-definition.json to run.
+ - <code>--meta-data</code>: The path to the metadata file. This file will be written by the command line tool. It contains information about the execution, such as performance metrics.
+ - <code>--encode</code>: This option tells the command line tool to run the algorithm in encode mode. You can also use other modes for debugging, such as <code>--predict</code>, <code>--audit</code>.
+ - <code>--source</code>: The path to the data set on which the algorithm should be run. This can be a file or a directory.
+ - <code>--dest</code>: The path to write the encoded (or predicted, or audited) data to.
+ - <code>--parameters</code>: The path to the parameter zip package. Only necessary if the operation requires a parameter (like prediction with a ML model).</p>
+<h3 id="debugging-the-algorithm-jar">Debugging the algorithm jar<a class="headerlink" href="#debugging-the-algorithm-jar" title="Permanent link">&para;</a></h3>
+<p>By executing the above command in your IDE, you can debug the algorithm jar. You can set breakpoints, inspect variables, etc. To do this, open the algorithm jar project in your IDE. Then, in the debug configuration, specify the classpath to include the hotvect-offline-util jar, and set the main class to <code>com.hotvect.offlineutils.commandline.Main</code>, and the program arguments to the arguments above.</p>
+<p>In Intellij, the steps are as follows:</p>
+<ul>
+<li>First, open the algorithm project in Intellij. Then, create a new run configuration as follows:</li>
+</ul>
+<p><img alt="create_new_run_config.png" src="../create_new_run_config.png" /></p>
+<ul>
+<li>Set the main class to <code>com.hotvect.offlineutils.commandline.Main</code> and edit the JVM arguments (like Xmx) as needed.</li>
+</ul>
+<p><img alt="set_main_class_jvm_options.png" src="../set_main_class_jvm_options.png" /></p>
+<ul>
+<li>Set the program arguments to the arguments above.</li>
+</ul>
+<p><img alt="program_arguments.png" src="../program_arguments.png" /></p>
+<ul>
+<li>Finally, set the classpath to include the hotvect-offline-util jar.</li>
+</ul>
+<p><img alt="modify_classpath.png" src="../modify_classpath.png" /></p>
+<p><img alt="modify_classpath_include.png" src="../modify_classpath_include.png" /></p>
+<p>Now you can run and debug the algorithm jar as you would any other Java application.</p>
+<p><img alt="final_run_configuration.png" src="../final_run_configuration.png" /></p>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+        
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        <a href="../develop-a-re-ranker-with-hotvect/" class="md-footer__link md-footer__link--prev" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Develop algorithms with hotvect
+            </div>
+          </div>
+        </a>
+      
+      
+        <a href="../run-and-compare-feature-audits/" class="md-footer__link md-footer__link--next" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Run and compare feature audits
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+        
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}, "search": "../../assets/javascripts/workers/search.4fa0e4ee.min.js", "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.1d3bfcf1.min.js"></script>
+      
+    
+  </body>
+</html>

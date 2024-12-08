@@ -1,0 +1,1123 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="canonical" href="https://hotvect.docs.zalando.net/howto/develop-a-re-ranker-with-hotvect/">
+      
+      <link rel="icon" href="../../hot_pepper.png">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-7.1.4">
+    
+    
+      
+        <title>Develop algorithms with hotvect - hotvect</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.bde7dde4.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ef6f36e2.min.css">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
+      
+    
+    
+    
+    
+      
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
+  
+    
+    <script>function __prefix(e){return new URL("../..",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#how-to-develop-a-re-ranker-with-hotvect" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="hotvect" class="md-header__button md-logo" aria-label="hotvect" data-md-component="logo">
+      
+  <img src="../../hot_pepper.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            hotvect
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Develop algorithms with hotvect
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        
+<a href="https://github.bus.zalan.do/Lounge-Data/hotvect/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GHE
+  </div>
+</a>
+      </div>
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="hotvect" class="md-nav__button md-logo" aria-label="hotvect" data-md-component="logo">
+      
+  <img src="../../hot_pepper.png" alt="logo">
+
+    </a>
+    hotvect
+  </label>
+  
+    <div class="md-nav__source">
+      
+<a href="https://github.bus.zalan.do/Lounge-Data/hotvect/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GHE
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        Getting Started
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../highlevel/motivation/" class="md-nav__link">
+        Key differences with other similar frameworks
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../highlevel/concepts/" class="md-nav__link">
+        Concepts and terminology
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+      
+      <label class="md-nav__link" for="__nav_4">
+        Migration Guide
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Migration Guide" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          Migration Guide
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../migration-guides/migration-from-v7-to-v8/" class="md-nav__link">
+        Migration from v7 to v8
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../migration-guides/migration-from-v6-to-v7/" class="md-nav__link">
+        Migration from v6 to v7
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../migration-guides/migration-from-v4-to-v6/" class="md-nav__link">
+        Migration from v4 to v6
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" checked>
+      
+      <label class="md-nav__link" for="__nav_5">
+        How to
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="How to" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          How to
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../use-previous-outputs/" class="md-nav__link">
+        Use previously generated parameters and other outputs in the pipeline
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Develop algorithms with hotvect
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Develop algorithms with hotvect
+      </a>
+      
+        
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-hotvects-scope" class="md-nav__link">
+    What is hotvect's scope?
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-do-i-define-feature-extraction-in-hotvect" class="md-nav__link">
+    How do I define feature extraction in hotvect?
+  </a>
+  
+    <nav class="md-nav" aria-label="How do I define feature extraction in hotvect?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#defining-the-shared-and-action-object" class="md-nav__link">
+    Defining the shared and action object
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hyperparameters-and-parameters" class="md-nav__link">
+    Hyperparameters and parameters
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#defining-the-transformations" class="md-nav__link">
+    Defining the transformations
+  </a>
+  
+    <nav class="md-nav" aria-label="Defining the transformations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-namespacerecord" class="md-nav__link">
+    The NamespaceRecord
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lazyness-memoization-and-parallalization" class="md-nav__link">
+    Lazyness, memoization and parallalization
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#memoization-interface" class="md-nav__link">
+    Memoization interface
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#common-mistakes" class="md-nav__link">
+    Common mistakes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tricks-and-tips" class="md-nav__link">
+    Tricks and tips
+  </a>
+  
+    <nav class="md-nav" aria-label="Tricks and tips">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#use-plain-namespaces-to-make-feature-names-clearer" class="md-nav__link">
+    Use "plain" namespaces to make feature names clearer
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-a-thread-local-cache-or-even-a-global-cache" class="md-nav__link">
+    Using a thread local cache (or even a global cache)
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-to-debugprofile-it" class="md-nav__link">
+    How to debug/profile it?
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-to-unit-test-it" class="md-nav__link">
+    How to unit test it?
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../debug-feature-engineering/" class="md-nav__link">
+        Debug feature engineering code
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../run-and-compare-feature-audits/" class="md-nav__link">
+        Run and compare feature audits
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../run-udf-on-sagemaker/" class="md-nav__link">
+        Run User Defined Functions on sagemaker
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dump-available-feature-transformations/" class="md-nav__link">
+        Dump available transformation metadata
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../faq/" class="md-nav__link">
+        FAQ
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-hotvects-scope" class="md-nav__link">
+    What is hotvect's scope?
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-do-i-define-feature-extraction-in-hotvect" class="md-nav__link">
+    How do I define feature extraction in hotvect?
+  </a>
+  
+    <nav class="md-nav" aria-label="How do I define feature extraction in hotvect?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#defining-the-shared-and-action-object" class="md-nav__link">
+    Defining the shared and action object
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hyperparameters-and-parameters" class="md-nav__link">
+    Hyperparameters and parameters
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#defining-the-transformations" class="md-nav__link">
+    Defining the transformations
+  </a>
+  
+    <nav class="md-nav" aria-label="Defining the transformations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-namespacerecord" class="md-nav__link">
+    The NamespaceRecord
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lazyness-memoization-and-parallalization" class="md-nav__link">
+    Lazyness, memoization and parallalization
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#memoization-interface" class="md-nav__link">
+    Memoization interface
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#common-mistakes" class="md-nav__link">
+    Common mistakes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tricks-and-tips" class="md-nav__link">
+    Tricks and tips
+  </a>
+  
+    <nav class="md-nav" aria-label="Tricks and tips">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#use-plain-namespaces-to-make-feature-names-clearer" class="md-nav__link">
+    Use "plain" namespaces to make feature names clearer
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-a-thread-local-cache-or-even-a-global-cache" class="md-nav__link">
+    Using a thread local cache (or even a global cache)
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-to-debugprofile-it" class="md-nav__link">
+    How to debug/profile it?
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-to-unit-test-it" class="md-nav__link">
+    How to unit test it?
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.bus.zalan.do/Lounge-Data/hotvect/edit/main/docs/howto/develop-a-re-ranker-with-hotvect.md" title="Edit this page" class="md-content__button md-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
+                  </a>
+                
+                
+                <h1 id="how-to-develop-a-re-ranker-with-hotvect">How to: Develop a Re-ranker with Hotvect<a class="headerlink" href="#how-to-develop-a-re-ranker-with-hotvect" title="Permanent link">&para;</a></h1>
+<h2 id="what-is-hotvects-scope">What is hotvect&rsquo;s scope?<a class="headerlink" href="#what-is-hotvects-scope" title="Permanent link">&para;</a></h2>
+<p>Hotvect&rsquo;s main function is to (1) execute feature extraction/transformations, (2) sending that to a machine learning algorithm, and (3) returning the result. Optionally, business logic (like heuristics) and algorithmic logic (like Epsilon-Greedy, Softmax Exploring) can be implemented in it, too.<br />
+Its focus is to (a) integrate a ML-based algorithm package seamlessly into a Java business application, and (b) in a way that is easy to test algorithms for correctness and system performance, so that algorithms can rapidly iterated upon. For this purpose, it provides other functionalities like backtesting, management of model parameters and hyperparameters, feature audits, integration with Sagemaker, etc.</p>
+<h2 id="how-do-i-define-feature-extraction-in-hotvect">How do I define feature extraction in hotvect?<a class="headerlink" href="#how-do-i-define-feature-extraction-in-hotvect" title="Permanent link">&para;</a></h2>
+<h3 id="defining-the-shared-and-action-object">Defining the <code>shared</code> and <code>action</code> object<a class="headerlink" href="#defining-the-shared-and-action-object" title="Permanent link">&para;</a></h3>
+<p>When you re-rank a set of content, you have information that is <code>shared</code> across them (like the user_id, the context url, time of day etc.), and information that is specific to each <code>action</code>, like the name of the SKU, the price, the category etc. In hotvect, you can use an arbitrary Java object to represent these information. I.e. you should have one Java class that holds the <code>shared</code> information, and one Java class that holds the <code>action</code> information. The re-ranker essentially receives one instance of the <code>shared</code> object, and a list of <code>action</code> objects which it re-ranks.  </p>
+<p>One could think of another category of information <code>slot</code>, which describes information about the possible places it would be displayed (e.g. which row it is, what the size of the image will be and so on). Currently, this information is not supported (although you could shoehorn it into the <code>shared</code> object via a List or a Map, for example).</p>
+<p>There is no restriction about what these objects are - as long as they are Java objects, they will work. That said, you probably want to use objects that are easy to serialize and deserialize, like a Java POJO generated for a serialization framework (like Jackson, Protobuf etc.).  </p>
+<h3 id="hyperparameters-and-parameters">Hyperparameters and parameters<a class="headerlink" href="#hyperparameters-and-parameters" title="Permanent link">&para;</a></h3>
+<p>Aside from the <code>shared</code> and <code>action</code> objects, hotvect algorithms also has access to <code>hyperparameters</code> and <code>parameters</code> when calculating features. <code>hyperparameters</code> is essentially a JSON file to which you can write any parameters you want to use in the algorithm. However, importantly, it cannot be very large, and it stays the same for the lifetime of the algorithm version.<br />
+<code>parameters</code> on the other hand is some arbitrary binary data that you can store against a name. Unlike <code>hyperparameters</code>, it can be any data, it can be large, and it&rsquo;s meant to be updated regularly (e.g. via a daily or hourly batch job).<br />
+The most obvious use case for <code>parameters</code> is to store the model parameters of a machine learning algorithm. However, you can also use it to store other information, like a lookup table, or pre-calculated feature values.</p>
+<h3 id="defining-the-transformations">Defining the transformations<a class="headerlink" href="#defining-the-transformations" title="Permanent link">&para;</a></h3>
+<p>Ultimately, hotvect takes the <code>shared</code> object and a list of <code>action</code> (and whatever object that was derived from <code>hyperparameters</code> and <code>parameters</code>) and transforms them into a form that can be sent to machine learning models, which are also managed by hotvect. It then re-ranks the list of <code>action</code> and returns the result.  </p>
+<p>Most ML algorithms accepts a type of dataframe as its input, and hence, hotvect also has an internal representation that is similar to a dataframe. However, unlike most dataframe implementation, it is row-oriented. This representation is called <code>NamespaceRecord</code>.  </p>
+<p>To define features, you declare the name of the feature (<code>namespace</code>), and the function that should be used to calculate the feature value from the <code>shared</code> and <code>action</code> objects.  </p>
+<h4 id="the-namespacerecord">The <code>NamespaceRecord</code><a class="headerlink" href="#the-namespacerecord" title="Permanent link">&para;</a></h4>
+<p><code>NamespaceRecord</code> is essentially a <code>Map&lt;Namespace, Object&gt;</code>, where the key is the name of the &ldquo;column&rdquo;, and the value is the feature value. A list of <code>NamespaceRecord</code>s is very similar to a dataframe.</p>
+<p>When you calculate features, it is important to be able to reuse calculations, as multiple features might depend on the same, expensive calculation. For example, you might want to calculate &ldquo;the number of followers of a user from country X&rdquo;, and then use that value in multiple features. To enable this, <code>NamespaceRecord</code> accepts any value type. I.e. you can store any Java object as a value, and reuse it (just like you might do with a dataframe). </p>
+<p>However, not all Java objects can be sent to the ML algorithm as features. Exactly what type is supported depends on the ML algorithm, but for example, the CatBoost integration supports the following types:
+<div class="highlight"><pre><span></span><code> - Categorical (String)
+ - Numerical (Double)
+ - Text (Array of String)
+ - Embedding (Array of Double)
+</code></pre></div></p>
+<p>To support this dual use (one for &ldquo;caching&rdquo; arbitrary calculation, and one for sending actual ML feature value), there are two types of <code>Namespace</code>. The &ldquo;regular&rdquo; <code>Namespace</code>, and the <code>FeatureNamespace</code> which is a subclass of <code>Namespace</code>. Only columns of type <code>FeatureNamespace</code> can be used as ML features, and you must declare what type of feature it holds (categorical, numerical, text etc.). Consequently, a single <code>FeatureNamespace</code> can only hold one type of feature value.</p>
+<p>For performance reasons, the <code>Namespace</code> object must always be a singleton. You can either have an enum that implements the <code>Namespace</code> or <code>FeatureNamespace</code>, or use the <code>CompoundNamespace</code> class to create a &ldquo;compound&rdquo; <code>Namespace</code> out of enum based <code>Namespace</code>. The latter is useful if you want to have many features that are similar. 
+For example, if you wanted to have features like below:
+<div class="highlight"><pre><span></span><code>DE_CH_brand_matching_ctr,
+FR_BE_brand_matching_ctr,
+DE_CH_brand_matching_cvr,
+FR_BE_brand_matching_cvr,
+FR_BE_category_matching_cvr,
+...
+</code></pre></div></p>
+<p>Instead of having to write out each enum, you can define 3 enums <code>Region{DE_CH, FR_BE}</code>, <code>Attribute{brand}</code>, <code>Metric{matching_ctr, matching_cvr}</code>and use the <code>CompoundNamespace</code> to create the &ldquo;concatenated&rdquo; <code>Namespace</code> objects to have all combinations. This way, you can dynamically generate features instead of having to hardcode them into the source code.  </p>
+<p>When you create compound <code>FeatureNamespace</code> objects, a feature value type (like <code>categorical</code>, <code>numerical</code>, <code>text</code> etc.) is assigned the first time it is retrieved. After that its feature value type cannot be changed.</p>
+<blockquote>
+<p><strong>Why do <code>Namespace</code> need to be singletones?</strong> In our use case, response time is critically important. Due to how often they are accessed, test revealed that only the EnumMap and IdentityHashMap can provide the necessary performance. Other objects, like interned strings were considered, but string interning is actually very expensive &amp; it&rsquo;s hard to tell if a given string had been interned. With the singleton-via-a-factory approach, we can prevent and detect bugs to some degree.</p>
+</blockquote>
+<h4 id="lazyness-memoization-and-parallalization">Lazyness, memoization and parallalization<a class="headerlink" href="#lazyness-memoization-and-parallalization" title="Permanent link">&para;</a></h4>
+<p>To build a good recommendation service, it is critical to process a lot of data within a short time. To achieve this, hotvect uses lazyness, memoization and parallelization.  </p>
+<ul>
+<li>Lazyness: Hotvect starts from a feature that was requested, and calculates its dependency on-demand (i.e. when it is requested). This way, it can avoid calculations that are not needed. This is important as features can be turned on and off via the hyperparameter.</li>
+<li>Memoization: Whenever a calculation depends on the same calculation, the result is automatically reused if &ldquo;caching&rdquo; is enabled for that calculation. Due to the small but nevertheless non-zero overhead of caching, it is not always advisable to use caching. By default, all calculations that only depend on <code>shared</code> object are cached, while others are not. This can be changed programmatically.</li>
+<li>Parallelization: Hotvect parallelizes the calculation of feature values as well as the subsequent ML inference. This is done through the use of ForkJoin framework.</li>
+</ul>
+<p>These have however, some consequence on the API as well as the implementation of feature extraction code.</p>
+<ul>
+<li><code>shared</code> and <code>action</code> objects, as well as calculation results in <code>NamespaceRecord</code> must not be mutated.</li>
+<li>Functions must be thread-safe and idempotent (unless you know what you are doing)</li>
+<li>You cannot directly read values out from the <code>NamespaceRecord</code> being created (instead, you have to request the value through the <code>Memoized</code> context object interface)</li>
+</ul>
+<h4 id="memoization-interface">Memoization interface<a class="headerlink" href="#memoization-interface" title="Permanent link">&para;</a></h4>
+<p>You can use hotvect without using its memoization interface, but for a lot of use case it may be necessary to meet the performance requirements. To use memoization, use the <code>MemoizingRankingTransformer</code>. This transformer can be built through its Builder interface. It will automatically convert the incoming <code>RankingRequest</code>s into a <code>MemoizedRankingRequest</code> which provides a context object through which you can request calculation results.</p>
+<p>Here are some example usages:</p>
+<div class="highlight"><pre><span></span><code><span class="cm">/**</span>
+<span class="cm"> * &quot;UserContext&quot; object is the shared object, and the &quot;Ad&quot; is the action object.</span>
+<span class="cm"> * As stated above, this can be any java object.</span>
+<span class="cm"> */</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">CTRModelTransformerFactory</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">RankingTransformerFactory</span><span class="o">&lt;</span><span class="n">UserContext</span><span class="p">,</span><span class="w"> </span><span class="n">Ad</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">    </span><span class="cm">/**</span>
+<span class="cm">     * This method is called by the framework to obtain a transformer, which is shared across threads/requests.</span>
+<span class="cm">     * @param hyperparameters The hyperparameters that are passed to the algorithm.</span>
+<span class="cm">     * @param parameters The parameters that are passed to the algorithm, like feature stores.</span>
+<span class="cm">     * @param algorithmDependencies Algorithms can use other algorithms as dependencies (e.g. for stacking).</span>
+<span class="cm">     */</span>
+<span class="w">    </span><span class="nd">@Override</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">RankingTransformer</span><span class="o">&lt;</span><span class="n">UserContext</span><span class="p">,</span><span class="w"> </span><span class="n">Ad</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="n">Optional</span><span class="o">&lt;</span><span class="n">JsonNode</span><span class="o">&gt;</span><span class="w"> </span><span class="n">hyperparameters</span><span class="p">,</span><span class="w"> </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">InputStream</span><span class="o">&gt;</span><span class="w"> </span><span class="n">parameters</span><span class="p">,</span><span class="w"> </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">AlgorithmInstance</span><span class="o">&lt;?&gt;&gt;</span><span class="w"> </span><span class="n">algorithmDependencies</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">MemoizingRankingTransformer</span><span class="p">.</span><span class="na">MemoizingRankingTransformerBuilder</span><span class="o">&lt;</span><span class="n">UserContext</span><span class="p">,</span><span class="w"> </span><span class="n">Ad</span><span class="o">&gt;</span><span class="w"> </span><span class="n">builder</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MemoizingRankingTransformer</span><span class="p">.</span><span class="na">builder</span><span class="p">();</span>
+
+<span class="w">        </span><span class="c1">// Here we register a function that yields the brand ID from the action object</span>
+<span class="w">        </span><span class="c1">// The result will be stored under the SKUAttribute.brand namespace</span>
+<span class="w">        </span><span class="n">builder</span><span class="p">.</span><span class="na">withActionTransformation</span><span class="p">(</span><span class="n">SkuAttribute</span><span class="p">.</span><span class="na">brand</span><span class="p">,</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">BrandExtractor</span><span class="p">());</span>
+
+<span class="w">        </span><span class="c1">// A neat trick is to define the extractor function in the enum itself, like this:</span>
+<span class="w">        </span><span class="n">builder</span><span class="p">.</span><span class="na">withActionTransformation</span><span class="p">(</span><span class="n">SkuAttribute</span><span class="p">.</span><span class="na">category</span><span class="p">,</span><span class="w"> </span><span class="n">SkuAttribute</span><span class="p">.</span><span class="na">category</span><span class="p">.</span><span class="na">getExtractor</span><span class="p">());</span>
+
+<span class="w">        </span><span class="c1">// Which also allows you to register the extractors in a loop, like this:</span>
+<span class="w">        </span><span class="k">for</span><span class="p">(</span><span class="n">SkuAttribute</span><span class="w"> </span><span class="n">skuAttribute</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">SkuAttribute</span><span class="p">.</span><span class="na">values</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">builder</span><span class="p">.</span><span class="na">withActionTransformation</span><span class="p">(</span><span class="n">skuAttribute</span><span class="p">,</span><span class="w"> </span><span class="n">skuAttribute</span><span class="p">.</span><span class="na">getExtractor</span><span class="p">());</span>
+<span class="w">        </span><span class="p">}</span>
+
+<span class="w">        </span><span class="c1">// Now let&#39;s declare extractors for the user&#39;s interaction history, which also contains brands</span>
+<span class="w">        </span><span class="c1">// For all user behavior types</span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">UserBehaviorType</span><span class="w"> </span><span class="n">userBehaviorType</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">UserBehaviorType</span><span class="p">.</span><span class="na">values</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="c1">// For all SKU attributes </span>
+<span class="w">            </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">SkuAttribute</span><span class="w"> </span><span class="n">skuAttribute</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">SkuAttribute</span><span class="p">.</span><span class="na">values</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="c1">// Obtain the special namespace object that e.g. represents &quot;add2cart_brand&quot;</span>
+<span class="w">                </span><span class="n">Namespace</span><span class="w"> </span><span class="n">namespace</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CompoundNamespace</span><span class="p">.</span><span class="na">getNamespace</span><span class="p">(</span><span class="n">userBehaviorType</span><span class="p">,</span><span class="w"> </span><span class="n">skuAttribute</span><span class="p">);</span>
+
+<span class="w">                </span><span class="c1">// For each namespace, you register a function that should be called to extract the feature value</span>
+<span class="w">                </span><span class="c1">// In this case, this function will operate on the shared object to yield a string array</span>
+<span class="w">                </span><span class="c1">// representing the brands that the user had added to cart</span>
+<span class="w">                </span><span class="n">builder</span><span class="p">.</span><span class="na">withSharedTransformations</span><span class="p">(</span><span class="n">namespace</span><span class="p">,</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">UserBehaviorAttributeExtractor</span><span class="p">(</span><span class="n">userBehaviorType</span><span class="p">,</span><span class="w"> </span><span class="n">skuAttribute</span><span class="p">));</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+
+<span class="w">        </span><span class="c1">// Now, for each combination, we define the &quot;MatchCount&quot; feature</span>
+<span class="w">        </span><span class="c1">// For all user behavior types</span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">UserBehaviorType</span><span class="w"> </span><span class="n">userBehaviorType</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">UserBehaviorType</span><span class="p">.</span><span class="na">values</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="c1">// For all SKU attributes that we can extract from a behavior</span>
+<span class="w">            </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">SkuAttribute</span><span class="w"> </span><span class="n">skuAttribute</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">SkuAttribute</span><span class="p">.</span><span class="na">values</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="c1">// Constructing feature namespace with UserBehaviorType, SKUAttribute, and NumericalAggregationType</span>
+<span class="w">                </span><span class="n">FeatureNamespace</span><span class="w"> </span><span class="n">featureNamespace</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CompoundNamespace</span><span class="p">.</span><span class="na">getFeatureNamespace</span><span class="p">(</span><span class="n">CatBoostFeatureType</span><span class="p">.</span><span class="na">NUMERIC</span><span class="p">,</span><span class="w"> </span><span class="n">userBehaviorType</span><span class="p">,</span><span class="w"> </span><span class="n">skuAttribute</span><span class="p">,</span><span class="w"> </span><span class="n">NumericalAggregationType</span><span class="p">.</span><span class="na">match_count</span><span class="p">);</span>
+
+<span class="w">                </span><span class="c1">// This is the column that contains the SKU attribute of the action being considered</span>
+<span class="w">                </span><span class="n">Namespace</span><span class="w"> </span><span class="n">probeNamespace</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CompoundNamespace</span><span class="p">.</span><span class="na">getNamespace</span><span class="p">(</span><span class="n">skuAttribute</span><span class="p">);</span>
+<span class="w">                </span><span class="c1">// This is the column that contains the SKU attribute of the user&#39;s interaction history</span>
+<span class="w">                </span><span class="n">Namespace</span><span class="w"> </span><span class="n">galleryNamespace</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CompoundNamespace</span><span class="p">.</span><span class="na">getNamespace</span><span class="p">(</span><span class="n">userBehaviorType</span><span class="p">,</span><span class="w"> </span><span class="n">skuAttribute</span><span class="p">);</span>
+
+<span class="w">                </span><span class="c1">// Use a match count function parameterized by the probe and gallery namespaces</span>
+<span class="w">                </span><span class="n">builder</span><span class="p">.</span><span class="na">withInteractionTransformation</span><span class="p">(</span><span class="n">featureNamespace</span><span class="p">,</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">MatchCount</span><span class="o">&lt;&gt;</span><span class="p">(</span><span class="n">probeNamespace</span><span class="p">,</span><span class="w"> </span><span class="n">galleryNamespace</span><span class="p">));</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+
+<span class="w">        </span><span class="c1">// Note that by defining a higher order function that returns the extractor function in the enum themselves,</span>
+<span class="w">        </span><span class="c1">// you could have defined the above in a loop as well, further reducing redundant code.</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">builder</span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>The above illustrates the definition of the transformer. Let&rsquo;s look at the <code>MatchCount</code> class.
+<div class="highlight"><pre><span></span><code><span class="cm">/**</span>
+<span class="cm"> * MemoizedInteractionTransformation is a memoized BiFunction that takes shared and action object as input, and resturns</span>
+<span class="cm"> * a value, in this case, a double. This can be a numerical feature, but also be used to calculate other features </span>
+<span class="cm"> * (like match_count_over_total).</span>
+<span class="cm"> * @param &lt;SHARED&gt; The shared object type.</span>
+<span class="cm"> * @param &lt;ACTION&gt; The action object type.</span>
+<span class="cm"> * @param &lt;T&gt; The type of elements in the probe and gallery array.</span>
+<span class="cm"> */</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">MatchCount</span><span class="o">&lt;</span><span class="n">SHARED</span><span class="p">,</span><span class="w"> </span><span class="n">ACTION</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">MemoizedInteractionTransformation</span><span class="o">&lt;</span><span class="n">SHARED</span><span class="p">,</span><span class="w"> </span><span class="n">ACTION</span><span class="p">,</span><span class="w"> </span><span class="n">Double</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">    </span><span class="c1">// The &quot;probe&quot; is generally the attribute of the action being considered</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">Namespace</span><span class="w"> </span><span class="n">probeId</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">// The &quot;gallery&quot; is generally the corresponding attribute of past user interactions, as an array </span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">Namespace</span><span class="w"> </span><span class="n">galleryId</span><span class="p">;</span>
+
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">MatchCount</span><span class="p">(</span><span class="n">Namespace</span><span class="w"> </span><span class="n">probeId</span><span class="p">,</span><span class="w"> </span><span class="n">Namespace</span><span class="w"> </span><span class="n">galleryId</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">probeId</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">probeId</span><span class="p">;</span>
+<span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">galleryId</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">galleryId</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="cm">/**</span>
+<span class="cm">     * This is called by the framework, to obtain the result.</span>
+<span class="cm">     * @param memoizedInteraction The is ultimately derived from the re-ranking request, and has the context to perform memoization.</span>
+<span class="cm">     * @return The count of matches between the probe and gallery elements.</span>
+<span class="cm">     */</span>
+<span class="w">    </span><span class="nd">@Override</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">Double</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="n">MemoizedInteraction</span><span class="o">&lt;</span><span class="n">SHARED</span><span class="p">,</span><span class="w"> </span><span class="n">ACTION</span><span class="o">&gt;</span><span class="w"> </span><span class="n">memoizedInteraction</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">T</span><span class="w"> </span><span class="n">probe</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">memoizedInteraction</span><span class="p">.</span><span class="na">computeIfAbsent</span><span class="p">(</span><span class="n">probeId</span><span class="p">);</span>
+<span class="w">        </span><span class="n">T</span><span class="o">[]</span><span class="w"> </span><span class="n">gallery</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">memoizedInteraction</span><span class="p">.</span><span class="na">getShared</span><span class="p">().</span><span class="na">computeIfAbsent</span><span class="p">(</span><span class="n">galleryId</span><span class="p">);</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">probe</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">gallery</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">gallery</span><span class="p">.</span><span class="na">length</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="c1">// null is used to indicate missing features (or missing values)</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">matchCount</span><span class="p">(</span><span class="n">probe</span><span class="p">,</span><span class="w"> </span><span class="n">gallery</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">Double</span><span class="w"> </span><span class="nf">matchCount</span><span class="p">(</span><span class="n">T</span><span class="w"> </span><span class="n">probe</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="o">[]</span><span class="w"> </span><span class="n">gallery</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">T</span><span class="w"> </span><span class="n">g</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">gallery</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">probe</span><span class="p">.</span><span class="na">equals</span><span class="p">(</span><span class="n">g</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="n">count</span><span class="o">++</span><span class="p">;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="p">(</span><span class="kt">double</span><span class="p">)</span><span class="w"> </span><span class="n">count</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></p>
+<p>A similar code in python would look like this (although the java version above has more generalizations):
+<div class="highlight"><pre><span></span><code><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+    <span class="s1">&#39;action_sku_brand&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;BrandA&#39;</span><span class="p">,</span> <span class="s1">&#39;BrandB&#39;</span><span class="p">,</span> <span class="s1">&#39;BrandC&#39;</span><span class="p">,</span> <span class="s1">&#39;BrandD&#39;</span><span class="p">,</span> <span class="s1">&#39;BrandE&#39;</span><span class="p">],</span>
+    <span class="s1">&#39;added_to_cart_brand&#39;</span><span class="p">:</span> <span class="p">[[</span><span class="s1">&#39;BrandA&#39;</span><span class="p">,</span> <span class="s1">&#39;BrandE&#39;</span><span class="p">,</span> <span class="s1">&#39;BrandA&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;BrandB&#39;</span><span class="p">,</span> <span class="s1">&#39;BrandC&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;BrandG&#39;</span><span class="p">,</span> <span class="s1">&#39;BrandH&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;BrandD&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;BrandX&#39;</span><span class="p">]],</span>
+    <span class="s1">&#39;clicked_brand&#39;</span><span class="p">:</span> <span class="p">[[</span><span class="s1">&#39;BrandE&#39;</span><span class="p">,</span> <span class="s1">&#39;BrandF&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;BrandB&#39;</span><span class="p">,</span> <span class="s1">&#39;BrandB&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;BrandC&#39;</span><span class="p">,</span> <span class="s1">&#39;BrandG&#39;</span><span class="p">],</span> <span class="p">[],</span> <span class="p">[</span><span class="s1">&#39;BrandE&#39;</span><span class="p">,</span> <span class="s1">&#39;BrandZ&#39;</span><span class="p">]],</span>
+    <span class="s1">&#39;ordered_brand&#39;</span><span class="p">:</span> <span class="p">[[</span><span class="s1">&#39;BrandA&#39;</span><span class="p">],</span> <span class="p">[],</span> <span class="p">[</span><span class="s1">&#39;BrandC&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;BrandD&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;BrandE&#39;</span><span class="p">]]</span>
+<span class="p">})</span>
+
+<span class="c1"># Parameterized function to count matches</span>
+<span class="k">def</span> <span class="nf">count_brand_matches</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">action_col</span><span class="p">,</span> <span class="n">gallery_col</span><span class="p">,</span> <span class="n">new_col_name</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">count_matches</span><span class="p">(</span><span class="n">row</span><span class="p">):</span>
+        <span class="n">action_brand</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="n">action_col</span><span class="p">]</span>
+        <span class="n">gallery_brands</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="n">gallery_col</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">gallery_brands</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">action_brand</span><span class="p">)</span>
+
+    <span class="n">df</span><span class="p">[</span><span class="n">new_col_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">count_matches</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># Compute match counts for different user behaviors</span>
+<span class="n">count_brand_matches</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="s1">&#39;action_sku_brand&#39;</span><span class="p">,</span> <span class="s1">&#39;added_to_cart_brand&#39;</span><span class="p">,</span> <span class="s1">&#39;add2cart_brand_match_count&#39;</span><span class="p">)</span>
+<span class="n">count_brand_matches</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="s1">&#39;action_sku_brand&#39;</span><span class="p">,</span> <span class="s1">&#39;clicked_brand&#39;</span><span class="p">,</span> <span class="s1">&#39;click_brand_match_count&#39;</span><span class="p">)</span>
+<span class="n">count_brand_matches</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="s1">&#39;action_sku_brand&#39;</span><span class="p">,</span> <span class="s1">&#39;ordered_brand&#39;</span><span class="p">,</span> <span class="s1">&#39;order_brand_match_count&#39;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+</code></pre></div></p>
+<p>Let&rsquo;s also look at some of the Namespace Enums
+<div class="highlight"><pre><span></span><code><span class="kd">public</span><span class="w"> </span><span class="kd">enum</span><span class="w"> </span><span class="n">SkuAttribute</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">Namespace</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">brand</span><span class="p">(</span>
+<span class="w">        </span><span class="n">action</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">action</span><span class="p">.</span><span class="na">getBrand</span><span class="p">()</span>
+<span class="w">    </span><span class="p">),</span>
+<span class="w">    </span><span class="n">category</span><span class="p">(</span>
+<span class="w">        </span><span class="n">action</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">action</span><span class="p">.</span><span class="na">getCategory</span><span class="p">()</span>
+<span class="w">    </span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// This is where we store the extractor function</span>
+<span class="w">    </span><span class="c1">// In this case we always extract a String, but you can mix output types as well</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">MemoizedActionTransformation</span><span class="o">&lt;</span><span class="n">Ad</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">extractFromAction</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">SkuAttribute</span><span class="p">(</span><span class="n">MemoizedActionTransformation</span><span class="o">&lt;</span><span class="n">Ad</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">extractor</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">extractFromAction</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">extractor</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// This function can be used in a loop to register the extractor for this enum value</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">MemoizedActionTransformation</span><span class="o">&lt;</span><span class="n">Ad</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">getExtractor</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="na">extractFromAction</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></p>
+<h4 id="common-mistakes">Common mistakes<a class="headerlink" href="#common-mistakes" title="Permanent link">&para;</a></h4>
+<ul>
+<li>Mutating the <code>shared</code> or <code>action</code> objects, or the calculation result for a <code>Namespace</code>: These objects are shared across threads and actions in unpredictable order, and hence, must not be mutated. Especially be careful if the values are collections or arrays etc. If you need to mutate them, you must make a copy of them first.</li>
+<li>Implementing your own caching: Hotvect automatically stores the calculation result in a variable for caching, so you don&rsquo;t need to do things like <code>if (this.result == null) this.result = calculate()</code>.</li>
+<li>Having unnecessary intermediate columns (namespaces): While namespaces (columns) are meant to be cheap, they are still a lot slower than native method dispatch. Hence, use them if you need to hold a feature, or if you need to reuse a calculation. It&rsquo;s ok to use columns for convenience, but if you can avoid it, it makes it more performant.</li>
+<li>Using <code>Stream</code>s: Believe it or not, Java&rsquo;s <code>Stream</code> are generally a lot slower than a simple loop. Unless you are crunching a very large stream, avoid them (especially the parallel stream).</li>
+<li>Turning on caching blindly (on action and interaction transformations): Caching is only beneficial if the computation is sufficiently heavy. When the calculation is too light, it can be detrimental to performance. Therefore, only turn on caching if you confirmed the performance gain of doing so.</li>
+<li>Not caching namespace objects: Obtaining the namespace object at inference time is expensive and even unsafe, as the CompoundNamespace class is not thread-safe. Always obtain the namespace object at the time the transformer is being created, and store them into a field for further use.</li>
+<li>Avoiding compound namespaces: There is no performance gain for using a enum based namespace over a compound namespace, because the underlying map is an IdentityHashMap.</li>
+<li>Looking for ways to configure the thread pool used for parallelization: Don&rsquo;t bother, it&rsquo;s not worth it.</li>
+</ul>
+<h4 id="tricks-and-tips">Tricks and tips<a class="headerlink" href="#tricks-and-tips" title="Permanent link">&para;</a></h4>
+<h5 id="use-plain-namespaces-to-make-feature-names-clearer">Use &ldquo;plain&rdquo; namespaces to make feature names clearer<a class="headerlink" href="#use-plain-namespaces-to-make-feature-names-clearer" title="Permanent link">&para;</a></h5>
+<p>A namespace doesn&rsquo;t always have to have a function associated with it. You can also have a namespace that is only used as a prefix or suffix (or in the middle section, for that matter). For example, if you prefer the name &ldquo;candidate_brand&rdquo; instead of just &ldquo;brand&rdquo; for the brand feature of the candidate SKU above, you could just do:
+<div class="highlight"><pre><span></span><code><span class="n">FeatureNamdspace</span><span class="w"> </span><span class="n">ns</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CompoundNamespace</span><span class="p">.</span><span class="na">getFeatureNamespace</span><span class="p">(</span><span class="n">CatBoostFeatureType</span><span class="p">.</span><span class="na">CATEGORICAL</span><span class="p">,</span><span class="w"> </span><span class="n">FeaturePrefix</span><span class="p">.</span><span class="na">candidate</span><span class="p">,</span><span class="w"> </span><span class="n">SkuAttribute</span><span class="p">.</span><span class="na">brand</span><span class="p">);</span>
+<span class="n">builder</span><span class="p">.</span><span class="na">withActionTransformation</span><span class="p">(</span><span class="n">ns</span><span class="p">,</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">BrandExtractor</span><span class="p">());</span>
+</code></pre></div>
+Instead of:
+<div class="highlight"><pre><span></span><code><span class="n">builder</span><span class="p">.</span><span class="na">withActionTransformation</span><span class="p">(</span><span class="n">SkuAttribute</span><span class="p">.</span><span class="na">brand</span><span class="p">,</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">BrandExtractor</span><span class="p">());</span>
+</code></pre></div>
+And your feature will have the name <code>candidate_brand</code> instead of <code>brand</code>. As described above, as long as you obtain the namespace objects at the time of building the transformer and store them into fields, there is no performance impact of using more namespace segments.</p>
+<p>This allows you to define multiple extractors for the same attribute, for example, and you can declare multiple features that extract the same attribute from different places, for example. E.g.:
+<div class="highlight"><pre><span></span><code><span class="n">builder</span><span class="p">.</span><span class="na">withInteractionTransformation</span><span class="p">(</span><span class="n">FeaturePrefix</span><span class="p">.</span><span class="na">candidate</span><span class="p">,</span><span class="w"> </span><span class="n">SkuAttribute</span><span class="p">.</span><span class="na">brand</span><span class="p">,</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">BrandExtractor</span><span class="p">());</span>
+</code></pre></div></p>
+<h5 id="using-a-thread-local-cache-or-even-a-global-cache">Using a thread local cache (or even a global cache)<a class="headerlink" href="#using-a-thread-local-cache-or-even-a-global-cache" title="Permanent link">&para;</a></h5>
+<p>In some situations, it might be beneficial to use a thread local cache. For example, if all the SKUs in the request happens to have the same brand, the feature &ldquo;add2cart_brand_match_count&rdquo; would be the same for all SKUs. Memoization currently doesn&rsquo;t help with this kind of situation, as you can&rsquo;t memoize on an arbitrary arguments.
+In this situation, you can use a thread local cache that stores the last calculation, and if the argument happens the same, return the result. For example:
+<div class="highlight"><pre><span></span><code><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">MatchCount</span><span class="o">&lt;</span><span class="n">SHARED</span><span class="p">,</span><span class="w"> </span><span class="n">ACTION</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">MemoizedInteractionTransformation</span><span class="o">&lt;</span><span class="n">SHARED</span><span class="p">,</span><span class="w"> </span><span class="n">ACTION</span><span class="p">,</span><span class="w"> </span><span class="n">Double</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="n">useThreadLocalCache</span><span class="p">;</span>
+
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">Namespace</span><span class="w"> </span><span class="n">probeId</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">Namespace</span><span class="w"> </span><span class="n">galleryId</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">class</span> <span class="nc">CacheEntry</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">final</span><span class="w"> </span><span class="n">T</span><span class="w"> </span><span class="n">probe</span><span class="p">;</span>
+<span class="w">        </span><span class="kd">final</span><span class="w"> </span><span class="n">T</span><span class="o">[]</span><span class="w"> </span><span class="n">gallery</span><span class="p">;</span>
+<span class="w">        </span><span class="kd">final</span><span class="w"> </span><span class="n">Double</span><span class="w"> </span><span class="n">result</span><span class="p">;</span>
+
+<span class="w">        </span><span class="kd">private</span><span class="w"> </span><span class="nf">CacheEntry</span><span class="p">(</span><span class="n">T</span><span class="w"> </span><span class="n">probe</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="o">[]</span><span class="w"> </span><span class="n">gallery</span><span class="p">,</span><span class="w"> </span><span class="n">Double</span><span class="w"> </span><span class="n">result</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">this</span><span class="p">.</span><span class="na">probe</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">probe</span><span class="p">;</span>
+<span class="w">            </span><span class="k">this</span><span class="p">.</span><span class="na">gallery</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gallery</span><span class="p">;</span>
+<span class="w">            </span><span class="k">this</span><span class="p">.</span><span class="na">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">result</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">ThreadLocal</span><span class="o">&lt;</span><span class="n">CacheEntry</span><span class="o">&gt;</span><span class="w"> </span><span class="n">cache</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ThreadLocal</span><span class="p">.</span><span class="na">withInitial</span><span class="p">(()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">CacheEntry</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"> </span><span class="kc">null</span><span class="p">));</span>
+
+
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">MatchCount</span><span class="p">(</span><span class="n">Namespace</span><span class="w"> </span><span class="n">probeId</span><span class="p">,</span><span class="w"> </span><span class="n">Namespace</span><span class="w"> </span><span class="n">galleryId</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">probeId</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">probeId</span><span class="p">;</span>
+<span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">galleryId</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">galleryId</span><span class="p">;</span>
+<span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">useThreadLocalCache</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">MatchCount</span><span class="p">(</span><span class="n">Namespace</span><span class="w"> </span><span class="n">probeId</span><span class="p">,</span><span class="w"> </span><span class="n">Namespace</span><span class="w"> </span><span class="n">galleryId</span><span class="p">,</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="n">useThreadLocalCache</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">probeId</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">probeId</span><span class="p">;</span>
+<span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">galleryId</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">galleryId</span><span class="p">;</span>
+<span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">useThreadLocalCache</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">useThreadLocalCache</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="nd">@Override</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">Double</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="n">MemoizedInteraction</span><span class="o">&lt;</span><span class="n">SHARED</span><span class="p">,</span><span class="w"> </span><span class="n">ACTION</span><span class="o">&gt;</span><span class="w"> </span><span class="n">memoizedInteraction</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">T</span><span class="w"> </span><span class="n">probe</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">memoizedInteraction</span><span class="p">.</span><span class="na">computeIfAbsent</span><span class="p">(</span><span class="n">probeId</span><span class="p">);</span>
+<span class="w">        </span><span class="n">T</span><span class="o">[]</span><span class="w"> </span><span class="n">gallery</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">memoizedInteraction</span><span class="p">.</span><span class="na">getShared</span><span class="p">().</span><span class="na">computeIfAbsent</span><span class="p">(</span><span class="n">galleryId</span><span class="p">);</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">probe</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">gallery</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">gallery</span><span class="p">.</span><span class="na">length</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+
+<span class="w">        </span><span class="k">if</span><span class="p">(</span><span class="n">useThreadLocalCache</span><span class="p">){</span>
+<span class="w">            </span><span class="n">CacheEntry</span><span class="w"> </span><span class="n">cached</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cache</span><span class="p">.</span><span class="na">get</span><span class="p">();</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">probe</span><span class="p">.</span><span class="na">equals</span><span class="p">(</span><span class="n">cached</span><span class="p">.</span><span class="na">probe</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">cached</span><span class="p">.</span><span class="na">gallery</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">gallery</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="n">cached</span><span class="p">.</span><span class="na">result</span><span class="p">;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+
+<span class="w">        </span><span class="n">Double</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">matchCount</span><span class="p">(</span><span class="n">probe</span><span class="p">,</span><span class="w"> </span><span class="n">gallery</span><span class="p">);</span>
+<span class="w">        </span><span class="k">if</span><span class="p">(</span><span class="n">useThreadLocalCache</span><span class="p">){</span>
+<span class="w">            </span><span class="n">cache</span><span class="p">.</span><span class="na">set</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">CacheEntry</span><span class="p">(</span><span class="n">probe</span><span class="p">,</span><span class="w"> </span><span class="n">gallery</span><span class="p">,</span><span class="w"> </span><span class="n">result</span><span class="p">));</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">result</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">Double</span><span class="w"> </span><span class="nf">matchCount</span><span class="p">(</span><span class="n">T</span><span class="w"> </span><span class="n">probe</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="o">[]</span><span class="w"> </span><span class="n">gallery</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">T</span><span class="w"> </span><span class="n">g</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">gallery</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">probe</span><span class="p">.</span><span class="na">equals</span><span class="p">(</span><span class="n">g</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="n">c</span><span class="o">++</span><span class="p">;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="p">(</span><span class="kt">double</span><span class="p">)</span><span class="w"> </span><span class="n">c</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></p>
+<p>Transformation functions are instantiated as singletons and shared across threads/requests, and hence the thread local cache can be stored in an instance field.</p>
+<p>You could also use a global cache, but be careful with this, as it can lead to memory leaks and/or hurt performance. Caches that are shared across threads have relatively high costs and only make sense in rather extreme cases.</p>
+<h4 id="how-to-debugprofile-it">How to debug/profile it?<a class="headerlink" href="#how-to-debugprofile-it" title="Permanent link">&para;</a></h4>
+<p>To inspect if there are issues in the calculated feature value: Use the &ldquo;feature-audit&rdquo; functionality. Especially for regression testing, you can use the &ldquo;compare-audit&rdquo; script to see only the feature values that have changed between versions.</p>
+<p>To debug issues: Without a debugger, it will be difficult to debug issues. Refer to <a href="../debug-feature-engineering/">How to debug feature engineering</a> to use a debugger.</p>
+<p>To profile the feature engineering to optimize its performance: it can be helpful to turn-off the parallelization feature (so that the profiling results are easier to interpret). You can do this from the hyperparameter.</p>
+<h4 id="how-to-unit-test-it">How to unit test it?<a class="headerlink" href="#how-to-unit-test-it" title="Permanent link">&para;</a></h4>
+<p>WIP</p>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+        
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        <a href="../use-previous-outputs/" class="md-footer__link md-footer__link--prev" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Use previously generated parameters and other outputs in the pipeline
+            </div>
+          </div>
+        </a>
+      
+      
+        <a href="../debug-feature-engineering/" class="md-footer__link md-footer__link--next" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Debug feature engineering code
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+        
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}, "search": "../../assets/javascripts/workers/search.4fa0e4ee.min.js", "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.1d3bfcf1.min.js"></script>
+      
+    
+  </body>
+</html>

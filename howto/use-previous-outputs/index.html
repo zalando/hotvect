@@ -1,0 +1,685 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="canonical" href="https://hotvect.docs.zalando.net/howto/use-previous-outputs/">
+      
+      <link rel="icon" href="../../hot_pepper.png">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-7.1.4">
+    
+    
+      
+        <title>Use previously generated parameters and other outputs in the pipeline - hotvect</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.bde7dde4.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ef6f36e2.min.css">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
+      
+    
+    
+    
+    
+      
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
+  
+    
+    <script>function __prefix(e){return new URL("../..",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#how-to-reuse-existing-outputs-like-prediction-parameters" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="hotvect" class="md-header__button md-logo" aria-label="hotvect" data-md-component="logo">
+      
+  <img src="../../hot_pepper.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            hotvect
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Use previously generated parameters and other outputs in the pipeline
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        
+<a href="https://github.bus.zalan.do/Lounge-Data/hotvect/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GHE
+  </div>
+</a>
+      </div>
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="hotvect" class="md-nav__button md-logo" aria-label="hotvect" data-md-component="logo">
+      
+  <img src="../../hot_pepper.png" alt="logo">
+
+    </a>
+    hotvect
+  </label>
+  
+    <div class="md-nav__source">
+      
+<a href="https://github.bus.zalan.do/Lounge-Data/hotvect/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GHE
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        Getting Started
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../highlevel/motivation/" class="md-nav__link">
+        Key differences with other similar frameworks
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../highlevel/concepts/" class="md-nav__link">
+        Concepts and terminology
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+      
+      <label class="md-nav__link" for="__nav_4">
+        Migration Guide
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Migration Guide" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          Migration Guide
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../migration-guides/migration-from-v7-to-v8/" class="md-nav__link">
+        Migration from v7 to v8
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../migration-guides/migration-from-v6-to-v7/" class="md-nav__link">
+        Migration from v6 to v7
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../migration-guides/migration-from-v4-to-v6/" class="md-nav__link">
+        Migration from v4 to v6
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" checked>
+      
+      <label class="md-nav__link" for="__nav_5">
+        How to
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="How to" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          How to
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Use previously generated parameters and other outputs in the pipeline
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Use previously generated parameters and other outputs in the pipeline
+      </a>
+      
+        
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#quick-guide-for-reusing-existing-prediction-parameters-model-parameters" class="md-nav__link">
+    Quick guide for reusing existing prediction parameters (model parameters)
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reusing-existing-prediction-parameters-model-parameters-without-a-dependency-algorithm" class="md-nav__link">
+    Reusing existing prediction parameters (model parameters) without a dependency algorithm
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-outputs-can-be-reused-in-hotvect" class="md-nav__link">
+    What outputs can be reused in hotvect?
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../develop-a-re-ranker-with-hotvect/" class="md-nav__link">
+        Develop algorithms with hotvect
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../debug-feature-engineering/" class="md-nav__link">
+        Debug feature engineering code
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../run-and-compare-feature-audits/" class="md-nav__link">
+        Run and compare feature audits
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../run-udf-on-sagemaker/" class="md-nav__link">
+        Run User Defined Functions on sagemaker
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dump-available-feature-transformations/" class="md-nav__link">
+        Dump available transformation metadata
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../faq/" class="md-nav__link">
+        FAQ
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#quick-guide-for-reusing-existing-prediction-parameters-model-parameters" class="md-nav__link">
+    Quick guide for reusing existing prediction parameters (model parameters)
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reusing-existing-prediction-parameters-model-parameters-without-a-dependency-algorithm" class="md-nav__link">
+    Reusing existing prediction parameters (model parameters) without a dependency algorithm
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-outputs-can-be-reused-in-hotvect" class="md-nav__link">
+    What outputs can be reused in hotvect?
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.bus.zalan.do/Lounge-Data/hotvect/edit/main/docs/howto/use-previous-outputs.md" title="Edit this page" class="md-content__button md-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
+                  </a>
+                
+                
+                <h1 id="how-to-reuse-existing-outputs-like-prediction-parameters">How to: Reuse existing outputs like prediction parameters<a class="headerlink" href="#how-to-reuse-existing-outputs-like-prediction-parameters" title="Permanent link">&para;</a></h1>
+<h2 id="quick-guide-for-reusing-existing-prediction-parameters-model-parameters">Quick guide for reusing existing prediction parameters (model parameters)<a class="headerlink" href="#quick-guide-for-reusing-existing-prediction-parameters-model-parameters" title="Permanent link">&para;</a></h2>
+<p>The most common use case for reusing existing outputs is to reuse prediction parameters (model parameters). For example, if you want to investigate an offline-online discrepancy, you might want to re-run the prediction offline, using the exact prediction parameter that was used in the online system and compare the scores.</p>
+<p>Another common use case is evaluating an algorithm in a different context. For example, you might want to evaluate an algorithm on a different test dataset. While you could generate the prediction parameters from scratch, reusing existing prediction parameters saves time.</p>
+<p>The easiest way to do this is to use the <code>hotvect_execution_parameters.with_parameter</code> option in the algorithm definition. Here is an example:</p>
+<p><div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;dependencies&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;my-algorithm-ctr-model&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;hotvect_execution_parameters&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;with_parameter&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;s3://mybucket/my-algorithm-ctr-model@my-algorithm-1.2.3-abc/last_train_date_2024-06-01/predict-parameters.zip&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+The value of <code>with_parameter</code> must either be a s3 URI, or a local file path. When this option is set, hotvect will use the prediction parameters from the specified location. If the prediction parameters are not found, hotvect will raise an error.</p>
+<p>When <code>with_parameter</code> is specified, all steps are skipped for that algorithm. Therefore, this option only makes sense to use for a dependency algorithm. If you use it for an top-level algorithm, the pipeline will simply not do anything.</p>
+<h2 id="reusing-existing-prediction-parameters-model-parameters-without-a-dependency-algorithm">Reusing existing prediction parameters (model parameters) without a dependency algorithm<a class="headerlink" href="#reusing-existing-prediction-parameters-model-parameters-without-a-dependency-algorithm" title="Permanent link">&para;</a></h2>
+<p>What if you don&rsquo;t have a dependency algorithm, but you still want to reuse existing prediction parameters? In this case, you can use the more low level parameter <code>cache</code> like so:
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;hotvect_execution_parameters&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;train&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;cache&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;s3://mybucket/my-algorithm-ctr-model@my-algorithm-1.2.3-abc/last_train_date_2024-06-01/predict-parameters.zip&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></p>
+<p>Similar to <code>with_parameter</code>, the value of <code>cache</code> can be a s3 URI or a local file path. When this option is set, hotvect will use the prediction parameters from the specified location. Unlike <code>with_parameter</code>, if the specified parameters are not found, hotvect will generate the prediction parameters and upload it to the specified location.</p>
+<h2 id="what-outputs-can-be-reused-in-hotvect">What outputs can be reused in hotvect?<a class="headerlink" href="#what-outputs-can-be-reused-in-hotvect" title="Permanent link">&para;</a></h2>
+<p>The <code>with_parameter</code> option only works with prediction parameters, but the <code>cache</code> option can be used for the following outputs:</p>
+<ul>
+<li><code>generate-state</code>: States that are needed for encoding of training data, like feature states or available action states</li>
+<li><code>encode</code>: The encoded training data</li>
+<li><code>train</code>: The prediction parameters (model parameters)</li>
+</ul>
+<p>The <code>cache</code> option should be specified under <code>hotvect_execution_parameters.&lt;step&gt;</code> where <code>&lt;step&gt;</code> is one of <code>generate-state</code>, <code>encode</code>, or <code>train</code> (see example below). It takes either a s3 URI, a local file path, or <code>true</code>. If the value is <code>true</code>, hotvect will cache the output in the default location using the algorithm name, algorithm version and hyperparameter version. For this to work, the option <code>cache_base_dir</code> must be set, which can be a s3 URI or a local file path.</p>
+<p>Since it&rsquo;s a caching mechanism, if the output is not available in the specified location, hotvect will generate the output and upload it to the specified location. The mechanism can be used to save time when a single algorithm needs to be evaluated in different ways (for example, on different datasets).</p>
+<p><div class="highlight"><pre><span></span><code><span class="p">{</span>
+    <span class="s2">&quot;hotvect_execution_parameters&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="c1"># This location will be used to derive the cache location if `cache` is set to `true`. If none of your cache locations are set to `true`, you can omit this.</span>
+        <span class="s2">&quot;cache_base_dir&quot;</span><span class="p">:</span> <span class="s2">&quot;s3://mybucket/cache/&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;generate-state&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="c1"># This will store the cache to the default location</span>
+            <span class="s2">&quot;cache&quot;</span><span class="p">:</span> <span class="kc">True</span>
+        <span class="p">},</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;dependencies&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;impression2add2cart-model&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;hotvect_execution_parameters&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;train&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="c1"># This will store the cache to the specified location</span>
+                    <span class="s2">&quot;cache&quot;</span><span class="p">:</span> <span class="s2">&quot;s3://mybucket/my-algorithm-ctr-model@my-algorithm-1.2.3-abc/last_train_date_2024-06-01/predict-parameters.zip&quot;</span>
+                <span class="p">},</span>
+                <span class="s2">&quot;predict&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="c1"># Unlike &quot;with_parameter&quot;, even if cache is specified, the pipeline will still execute prediction and performance-test by default</span>
+                    <span class="c1"># If you want to skip these steps, you can set &quot;enabled&quot; to false</span>
+                    <span class="s2">&quot;enabled&quot;</span><span class="p">:</span> <span class="kc">False</span>
+                <span class="p">},</span>
+                <span class="s2">&quot;predict&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="c1"># Unlike &quot;with_parameter&quot;, even if cache is specified, the pipeline will still execute prediction and performance-test by default</span>
+                    <span class="c1"># If you want to skip these steps, you can set &quot;enabled&quot; to false</span>
+                    <span class="s2">&quot;enabled&quot;</span><span class="p">:</span> <span class="kc">False</span>
+                <span class="p">},</span>
+
+                <span class="s2">&quot;performance-test&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;enabled&quot;</span><span class="p">:</span> <span class="kc">False</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+Unlike &ldquo;with_parameter&rdquo;, even if cache is specified, the pipeline will still execute subsequent steps (<code>prediction</code>, and <code>performance-test</code>), step by default. If you want to skip these steps, you can set &ldquo;enabled&rdquo; to false for these steps. Or, you can use <code>with_parameter</code> to achieve the same behavior.</p>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+        
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        <a href="../../migration-guides/migration-from-v4-to-v6/" class="md-footer__link md-footer__link--prev" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Migration from v4 to v6
+            </div>
+          </div>
+        </a>
+      
+      
+        <a href="../develop-a-re-ranker-with-hotvect/" class="md-footer__link md-footer__link--next" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Develop algorithms with hotvect
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+        
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}, "search": "../../assets/javascripts/workers/search.4fa0e4ee.min.js", "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.1d3bfcf1.min.js"></script>
+      
+    
+  </body>
+</html>
