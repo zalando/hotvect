@@ -13,6 +13,7 @@ import javax.lang.model.element.TypeElement;
 import com.hotvect.core.annotation.Feature;
 import com.hotvect.core.annotation.GenerateSimpleRankingTransformer;
 import com.hotvect.core.annotation.Inject;
+import com.hotvect.core.annotation.InjectAlgorithm;
 import com.hotvect.core.annotation.SharedFeature;
 import com.hotvect.core.transform.ranking.SharedContext;
 import com.hotvect.core.annotation.processor.analysis.GraphAnalyzer;
@@ -39,6 +40,7 @@ public final class SimpleRankingTransformerProcessor extends AbstractProcessor {
                 processingEnv.getElementUtils().getTypeElement(SharedFeature.class.getCanonicalName()),
                 processingEnv.getElementUtils().getTypeElement(Feature.class.getCanonicalName()),
                 processingEnv.getElementUtils().getTypeElement(Inject.class.getCanonicalName()),
+                processingEnv.getElementUtils().getTypeElement(InjectAlgorithm.class.getCanonicalName()),
                 processingEnv.getElementUtils().getTypeElement(GenerateSimpleRankingTransformer.class.getCanonicalName()),
                 processingEnv.getElementUtils().getTypeElement(SharedContext.class.getCanonicalName())
         );

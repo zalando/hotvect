@@ -7,10 +7,10 @@ import java.util.*;
 import javax.annotation.processing.Filer;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
-import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
@@ -87,6 +87,10 @@ public final class SimpleRankingTransformerGenerator {
 
         TypeName sharedType = TypeName.get(spec.sharedType());
         TypeName actionType = TypeName.get(spec.actionType());
+        Map<String, AlgorithmDependency> algorithmDependencies = resolveAlgorithmDependencies(reachable);
+        if (algorithmDependencies == null) {
+            return;
+        }
 
         List<FeatureNode> outputNodes = new ArrayList<>();
         for (String name : spec.outputFeatures()) {
@@ -156,8 +160,12 @@ public final class SimpleRankingTransformerGenerator {
 
         TypeName featureStoreRetrieverType = ParameterizedTypeName.get(featureStoreRetriever, sharedType, actionType);
         typeBuilder.addField(FieldSpec.builder(featureStoreRetrieverType, "featureStoreRetriever", Modifier.PRIVATE, Modifier.FINAL).build());
+        for (AlgorithmDependency algorithmDependency : algorithmDependencies.values()) {
+            typeBuilder.addField(FieldSpec.builder(TypeName.get(algorithmDependency.type()), algorithmDependency.fieldName(),
+                    Modifier.PRIVATE, Modifier.FINAL).build());
+        }
 
-        typeBuilder.addMethod(buildPrimaryConstructor(featureStoreRetrieverType));
+        typeBuilder.addMethod(buildPrimaryConstructor(featureStoreRetrieverType, algorithmDependencies));
 
         typeBuilder.addMethod(buildTransformStream(sharedType, actionType, sharedContext, rankingRequest,
                 featureStoreResponse));
@@ -165,9 +173,9 @@ public final class SimpleRankingTransformerGenerator {
                 featureStoreResponse, listBatchingSpliterator));
         typeBuilder.addMethod(buildGetUsedFeatures(namespace));
 
-        typeBuilder.addMethod(buildComputeShared(sharedOrder, sharedFields, nodesByName, sharedType, sharedContext));
+        typeBuilder.addMethod(buildComputeShared(sharedOrder, sharedFields, nodesByName, sharedType, sharedContext, algorithmDependencies));
         typeBuilder.addMethod(buildComputeAction(actionOrder, sharedFields, actionFields, nodesByName,
-                sharedType, actionType, sharedContext));
+                sharedType, actionType, sharedContext, algorithmDependencies));
         typeBuilder.addMethod(buildTransformAction(actionType, sharedType, sharedContext, transformedAction,
                 namespacedRecord, namespace, outputNodes, outputConstants, actionFields));
 
@@ -362,11 +370,16 @@ public final class SimpleRankingTransformerGenerator {
         return null;
     }
 
-    private MethodSpec buildPrimaryConstructor(TypeName featureStoreRetrieverType) {
+    private MethodSpec buildPrimaryConstructor(TypeName featureStoreRetrieverType,
+                                              Map<String, AlgorithmDependency> algorithmDependencies) {
         MethodSpec.Builder ctor = MethodSpec.constructorBuilder()
                 .addModifiers(Modifier.PUBLIC)
                 .addParameter(featureStoreRetrieverType, "featureStoreRetriever");
         ctor.addStatement("this.featureStoreRetriever = featureStoreRetriever");
+        for (AlgorithmDependency algorithmDependency : algorithmDependencies.values()) {
+            ctor.addParameter(TypeName.get(algorithmDependency.type()), algorithmDependency.fieldName());
+            ctor.addStatement("this.$L = $L", algorithmDependency.fieldName(), algorithmDependency.fieldName());
+        }
         return ctor.build();
     }
 
@@ -461,17 +474,18 @@ public final class SimpleRankingTransformerGenerator {
                                           Map<String, String> sharedFields,
                                           Map<String, FeatureNode> nodesByName,
                                           TypeName sharedType,
-                                          ClassName sharedContext) {
+                                          ClassName sharedContext,
+                                          Map<String, AlgorithmDependency> algorithmDependencies) {
         ParameterizedTypeName contextType = ParameterizedTypeName.get(sharedContext, sharedType);
         MethodSpec.Builder method = MethodSpec.methodBuilder("computeSharedValues")
-                .addModifiers(Modifier.PRIVATE, Modifier.STATIC)
+                .addModifiers(Modifier.PRIVATE)
                 .returns(ClassName.bestGuess("SharedValues"))
                 .addParameter(contextType, "context");
         method.addStatement("$T shared = context.shared()", sharedType);
         method.addStatement("SharedValues sharedValues = new SharedValues()");
         for (FeatureNode node : sharedOrder) {
             CodeBlock expr = buildCallExpression(node, "context", "shared", "action", "sharedValues", "actionValues",
-                    sharedFields, Map.of(), nodesByName);
+                    sharedFields, Map.of(), nodesByName, algorithmDependencies);
             String field = sharedFields.get(node.name());
             method.addStatement("sharedValues.$L = $L", field, expr);
         }
@@ -485,10 +499,11 @@ public final class SimpleRankingTransformerGenerator {
                                           Map<String, FeatureNode> nodesByName,
                                           TypeName sharedType,
                                           TypeName actionType,
-                                          ClassName sharedContext) {
+                                          ClassName sharedContext,
+                                          Map<String, AlgorithmDependency> algorithmDependencies) {
         ParameterizedTypeName contextType = ParameterizedTypeName.get(sharedContext, sharedType);
         MethodSpec.Builder method = MethodSpec.methodBuilder("computeActionValues")
-                .addModifiers(Modifier.PRIVATE, Modifier.STATIC)
+                .addModifiers(Modifier.PRIVATE)
                 .returns(ClassName.bestGuess("ActionValues"))
                 .addParameter(contextType, "context")
                 .addParameter(sharedType, "shared")
@@ -497,7 +512,7 @@ public final class SimpleRankingTransformerGenerator {
         method.addStatement("ActionValues actionValues = new ActionValues()");
         for (FeatureNode node : actionOrder) {
             CodeBlock expr = buildCallExpression(node, "context", "shared", "action", "sharedValues", "actionValues",
-                    sharedFields, actionFields, nodesByName);
+                    sharedFields, actionFields, nodesByName, algorithmDependencies);
             String field = actionFields.get(node.name());
             method.addStatement("actionValues.$L = $L", field, expr);
         }
@@ -543,14 +558,15 @@ public final class SimpleRankingTransformerGenerator {
                                           String actionValuesVar,
                                           Map<String, String> sharedFields,
                                           Map<String, String> actionFields,
-                                          Map<String, FeatureNode> nodesByName) {
+                                          Map<String, FeatureNode> nodesByName,
+                                          Map<String, AlgorithmDependency> algorithmDependencies) {
         TypeElement ownerElement = (TypeElement) node.method().getEnclosingElement();
         ClassName owner = ClassName.get(ownerElement);
         String methodName = node.method().getSimpleName().toString();
         List<String> args = new ArrayList<>();
         for (Param param : node.params()) {
             args.add(paramExpression(param, contextVar, sharedVar, actionVar, sharedValuesVar, actionValuesVar,
-                    sharedFields, actionFields, nodesByName));
+                    sharedFields, actionFields, nodesByName, algorithmDependencies));
         }
         CodeBlock.Builder expr = CodeBlock.builder();
         expr.add("$T.$L(", owner, methodName);
@@ -572,12 +588,14 @@ public final class SimpleRankingTransformerGenerator {
                                    String actionValuesVar,
                                    Map<String, String> sharedFields,
                                    Map<String, String> actionFields,
-                                   Map<String, FeatureNode> nodesByName) {
+                                   Map<String, FeatureNode> nodesByName,
+                                   Map<String, AlgorithmDependency> algorithmDependencies) {
         return switch (param.kind()) {
             case CONTEXT -> contextVar;
             case SHARED -> sharedVar;
             case ACTION -> actionVar;
             case INJECTED -> injectedExpression(param, sharedValuesVar, actionValuesVar, sharedFields, actionFields, nodesByName);
+            case ALGORITHM -> algorithmExpression(param, algorithmDependencies);
         };
     }
 
@@ -601,6 +619,14 @@ public final class SimpleRankingTransformerGenerator {
             field = toFieldName(sharedName);
         }
         return sharedValuesVar + "." + field;
+    }
+
+    private String algorithmExpression(Param param, Map<String, AlgorithmDependency> algorithmDependencies) {
+        AlgorithmDependency algorithmDependency = algorithmDependencies.get(param.injectName());
+        if (algorithmDependency == null) {
+            return "this." + toFieldName(param.injectName());
+        }
+        return "this." + algorithmDependency.fieldName();
     }
 
     private TypeSpec buildHolder(String className, List<FeatureNode> order, Map<String, String> fields) {
@@ -675,6 +701,53 @@ public final class SimpleRankingTransformerGenerator {
         }
         return candidate;
     }
+
+    private Map<String, AlgorithmDependency> resolveAlgorithmDependencies(Set<FeatureNode> reachable) {
+        Map<String, AlgorithmDependency> dependencies = new LinkedHashMap<>();
+        Set<String> usedFieldNames = new HashSet<>();
+        usedFieldNames.add("featureStoreRetriever");
+        boolean hasErrors = false;
+
+        List<FeatureNode> ordered = new ArrayList<>(reachable);
+        ordered.sort(Comparator.comparing(FeatureNode::name));
+        for (FeatureNode node : ordered) {
+            for (Param param : node.params()) {
+                if (param.kind() != ParamKind.ALGORITHM) {
+                    continue;
+                }
+
+                AlgorithmDependency existing = dependencies.get(param.injectName());
+                if (existing != null) {
+                    if (!sameErasure(existing.type(), param.element().asType())) {
+                        context.messager().printMessage(
+                                Diagnostic.Kind.ERROR,
+                                "Algorithm dependency '" + param.injectName() + "' is requested with incompatible parameter types: "
+                                        + existing.type() + " and " + param.element().asType() + ".",
+                                param.element()
+                        );
+                        hasErrors = true;
+                    }
+                    continue;
+                }
+
+                String baseFieldName = toFieldName(param.injectName());
+                String fieldName = baseFieldName;
+                int suffix = 2;
+                while (!usedFieldNames.add(fieldName)) {
+                    fieldName = baseFieldName + "_" + suffix++;
+                }
+                dependencies.put(param.injectName(), new AlgorithmDependency(param.injectName(), param.element().asType(), fieldName));
+            }
+        }
+
+        return hasErrors ? null : dependencies;
+    }
+
+    private boolean sameErasure(TypeMirror left, TypeMirror right) {
+        return context.types().isSameType(context.types().erasure(left), context.types().erasure(right));
+    }
+
+    private record AlgorithmDependency(String injectName, TypeMirror type, String fieldName) {}
 
     private boolean isJavaKeyword(String value) {
         return switch (value) {
