@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import List
 
 import hotvect.hotvectjar
+from hotvect.jvm_args import normalize_runtime_jvm_args
 from hotvect.utils import stream_output
 
 logger = logging.getLogger(__name__)
@@ -20,13 +21,10 @@ def run_performance_test(
     samples: int,
     java_args: List[str],
 ):
+    resolved_jvm_args = normalize_runtime_jvm_args(java_args)
     cmd = ["java"]
-    cmd.extend(java_args)
-    if not any(arg.startswith("-Xmx") or arg.startswith("-XX:MaxRAMPercentage") for arg in java_args):
-        cmd.append("-XX:MaxRAMPercentage=80")
-    if "-XX:+ExitOnOutOfMemoryError" not in java_args:
-        cmd.append("-XX:+ExitOnOutOfMemoryError")
-    if "-cp" not in java_args:
+    cmd.extend(resolved_jvm_args)
+    if "-cp" not in resolved_jvm_args:
         cmd.extend(["-cp", str(hotvect.hotvectjar.HOTVECT_JAR_PATH)])
 
     cmd.extend(

@@ -23,6 +23,7 @@ from pebble import ProcessFuture, ProcessPool
 
 from hotvect import utils
 from hotvect.build_utils import clone_and_build_algorithm_jar
+from hotvect.jvm_args import normalize_pipeline_jvm_options
 from hotvect.pyhotvect import AlgorithmPipeline, AlgorithmPipelineContext, DataDependency
 from hotvect.utils import (
     AlgorithmSpec,
@@ -425,7 +426,7 @@ class BacktestPipeline:
             data_base_path=Path(self.data_base_dir),
             metadata_base_path=Path(os.path.join(self.output_data_dir, "meta")),
             output_base_path=Path(os.path.join(self.output_data_dir, "out")),
-            jvm_options=jvm_options if jvm_options else ["-XX:MaxRAMPercentage=80"],
+            jvm_options=normalize_pipeline_jvm_options(jvm_options),
             max_threads=None,
             queue_length=None,
             batch_size=None,
@@ -568,7 +569,7 @@ class BacktestPipeline:
             data_base_path=Path(self.data_base_dir),
             metadata_base_path=Path(os.path.join(self.output_data_dir, "meta")),
             output_base_path=Path(os.path.join(self.output_data_dir, "out")),
-            jvm_options=jvm_options if jvm_options else ["-XX:MaxRAMPercentage=80"],
+            jvm_options=normalize_pipeline_jvm_options(jvm_options),
             max_threads=max_thread_per_process,
             queue_length=queue_length,
             batch_size=None,

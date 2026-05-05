@@ -522,7 +522,7 @@ hv serve --algorithm-jar <path_to_jar> --algorithm-name <algorithm_name> --param
 - `--max-request-mib`: Maximum accepted request size in MiB (default: `256`).
 
 **Runtime defaults**:
-- `hv serve` injects `-XX:MaxRAMPercentage=90` when you do not pass an explicit heap cap (`-Xmx...` or `-XX:MaxRAMPercentage=...`).
+- `hv serve` injects `-XX:MaxRAMPercentage=80` when you do not pass an explicit heap cap (`-Xmx...` or `-XX:MaxRAMPercentage=...`).
 - `hv serve` also injects `-XX:+ExitOnOutOfMemoryError` unless that exact flag is already present.
 - Extra JVM args must be passed after an explicit `--` separator (for example `hv serve ... -- -Xmx4g`). Use an explicit heap flag when you want to take control of heap sizing.
 

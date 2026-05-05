@@ -7,6 +7,14 @@ import pytest
 
 
 def _load_hv_module():
+    hotvectjar_dir = Path(__file__).resolve().parents[2] / "hotvectjar"
+    hotvectjar_dir.mkdir(parents=True, exist_ok=True)
+    for jar_name in (
+        "hotvect-offline-util-test-jar-with-dependencies.jar",
+        "hotvect-algorithm-demo-test-jar-with-dependencies.jar",
+    ):
+        jar_path = hotvectjar_dir / jar_name
+        jar_path.touch(exist_ok=True)
     for parent in Path(__file__).resolve().parents:
         candidate = parent / "bin" / "hv"
         if candidate.exists():
@@ -56,6 +64,40 @@ def test_hv_audit_accepts_explicit_passthrough_after_double_dash(monkeypatch, tm
 
     assert captured["cmd"][:3] == ["java", "-Xmx2g", "-Dfoo=bar"]
     assert captured["cmd"][captured["cmd"].index("com.hotvect.offlineutils.commandline.Main") + 1] == "audit"
+
+
+def test_hv_audit_uses_default_runtime_jvm_args_without_passthrough(monkeypatch, tmp_path: Path):
+    hv = _load_hv_module()
+    captured = {}
+
+    monkeypatch.setattr(hv.hotvect.hotvectjar, "HOTVECT_JAR_PATH", Path("/tmp/offline.jar"))
+
+    def _capture_run(cmd, metadata_dir: Path, env=None):
+        captured["cmd"] = cmd
+
+    monkeypatch.setattr(hv, "_tee_subprocess_output_to_metadata_dir", _capture_run)
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "hv",
+            "audit",
+            "--algorithm-jar",
+            "algo.jar",
+            "--algorithm-name",
+            "demo-algo",
+            "--source-path",
+            "input.jsonl",
+            "--dest-path",
+            "out.jsonl",
+            "--metadata-path",
+            str(tmp_path / "meta"),
+        ],
+    )
+
+    hv.main()
+
+    assert captured["cmd"][1:3] == ["-XX:MaxRAMPercentage=80", "-XX:+ExitOnOutOfMemoryError"]
 
 
 def test_hv_rejects_implicit_passthrough_without_double_dash(monkeypatch, capsys):

@@ -70,6 +70,20 @@ def test_base_command_does_not_duplicate_exit_on_oom_when_provided_via_pipeline_
     assert command.count("-XX:+ExitOnOutOfMemoryError") == 1
 
 
+def test_base_command_adds_default_heap_cap_when_only_non_heap_jvm_args_are_provided(tmp_path: Path):
+    pipeline = _make_pipeline(
+        tmp_path,
+        algorithm_definition={},
+        jvm_options=["-Dfoo=bar"],
+    )
+
+    command = pipeline._base_command(task_name="train", metadata_location=str(tmp_path / "meta"))
+
+    assert "-Dfoo=bar" in command
+    assert command.count("-XX:MaxRAMPercentage=80") == 1
+    assert command.count("-XX:+ExitOnOutOfMemoryError") == 1
+
+
 def test_base_command_uses_offline_util_subcommand_when_known_task(tmp_path: Path):
     pipeline = _make_pipeline(tmp_path, algorithm_definition={}, jvm_options=None)
 

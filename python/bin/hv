@@ -16,6 +16,7 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 
 import hotvect
 import hotvect.hotvectjar
+from hotvect.jvm_args import normalize_pipeline_jvm_options, normalize_runtime_jvm_args
 from hotvect.sagemaker_config import (
     apply_performance_test_samples_override,
     build_training_job_definition,
@@ -495,13 +496,10 @@ class JavaCommand(BaseCommand):
     def run_java_command(self, args: argparse.Namespace, jvm_args: List[str]) -> None:
         """Run the Java command."""
 
+        resolved_jvm_args = normalize_runtime_jvm_args(jvm_args)
         cmd = ["java"]
-        cmd.extend(jvm_args)
-        if not any(arg.startswith("-Xmx") or arg.startswith("-XX:MaxRAMPercentage") for arg in jvm_args):
-            cmd.append("-XX:MaxRAMPercentage=90")
-        if "-XX:+ExitOnOutOfMemoryError" not in jvm_args:
-            cmd.append("-XX:+ExitOnOutOfMemoryError")
-        if "-cp" not in jvm_args:
+        cmd.extend(resolved_jvm_args)
+        if "-cp" not in resolved_jvm_args:
             cmd.extend(["-cp", str(hotvect.hotvectjar.HOTVECT_JAR_PATH)])
 
         algorithm_definition_arg = self._resolve_java_algorithm_definition_arg(args)
@@ -841,11 +839,8 @@ class TrainCommand(BaseCommand):
                     "or set them in ~/.hotvect/config.json under config.directories."
                 )
 
-        # Parse extra JVM args if provided
-        jvm_options = ["-XX:MaxRAMPercentage=90"]  # Default JVM memory
-        if args.extra_jvm_args:
-            extra_jvm_args = [arg.strip() for arg in args.extra_jvm_args.split(',')]
-            jvm_options.extend(extra_jvm_args)
+        extra_jvm_args = [arg.strip() for arg in args.extra_jvm_args.split(",") if arg.strip()] if args.extra_jvm_args else None
+        jvm_options = normalize_pipeline_jvm_options(extra_jvm_args)
 
         # Parse last test time
         last_test_time = date.fromisoformat(args.last_test_time)
@@ -1554,13 +1549,10 @@ class ServeCommand(BaseCommand):
 
         host = _resolve_host(args.host)
         jvm_args = getattr(args, "_jvm_args", [])
+        resolved_jvm_args = normalize_runtime_jvm_args(jvm_args)
         cmd = ["java"]
-        cmd.extend(jvm_args)
-        if not any(arg.startswith("-Xmx") or arg.startswith("-XX:MaxRAMPercentage") for arg in jvm_args):
-            cmd.append("-XX:MaxRAMPercentage=90")
-        if "-XX:+ExitOnOutOfMemoryError" not in jvm_args:
-            cmd.append("-XX:+ExitOnOutOfMemoryError")
-        if "-cp" not in jvm_args:
+        cmd.extend(resolved_jvm_args)
+        if "-cp" not in resolved_jvm_args:
             cmd.extend(["-cp", str(hotvect.hotvectjar.HOTVECT_ALGORITHM_DEMO_JAR_PATH)])
         cmd.extend(
             [
@@ -1905,10 +1897,8 @@ class BacktestCommand(BaseCommand):
                     logger.info(f"No algorithm override applied to git reference {git_ref}")
                 git_references.append((git_ref, override))
 
-        # Parse JVM options
-        jvm_options = None
-        if args.extra_jvm_args:
-            jvm_options = [arg.strip() for arg in args.extra_jvm_args.split(',')]
+        extra_jvm_args = [arg.strip() for arg in args.extra_jvm_args.split(",") if arg.strip()] if args.extra_jvm_args else None
+        jvm_options = normalize_pipeline_jvm_options(extra_jvm_args)
 
         remote_mode = bool(args.sagemaker or args.sagemaker_config)
 

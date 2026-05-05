@@ -25,6 +25,7 @@ from mypy_boto3_sagemaker.type_defs import CreateTrainingJobResponseTypeDef, Des
 
 import hotvect.utils as hotvect_utils
 from hotvect import mlutils
+from hotvect.jvm_args import normalize_pipeline_jvm_options
 from hotvect.pyhotvect import AlgorithmPipeline, AlgorithmPipelineContext
 from hotvect.utils import get_boto_session_after_assuming_role
 
@@ -693,7 +694,7 @@ class SagemakerAlgorithmPipelineRebuilder:
             data_base_path=data_base_path,
             metadata_base_path=metadata_base_path,
             output_base_path=output_data_base_path,
-            jvm_options=context_in_hyperparameters.get("jvm_options", ["-XX:MaxRAMPercentage=80"]),
+            jvm_options=normalize_pipeline_jvm_options(context_in_hyperparameters.get("jvm_options")),
             max_threads=context_in_hyperparameters.get("max_threads"),
             queue_length=context_in_hyperparameters.get("queue_length"),
             batch_size=context_in_hyperparameters.get("batch_size"),

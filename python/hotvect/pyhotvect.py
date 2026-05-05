@@ -18,6 +18,7 @@ import psutil
 from jinja2 import Template
 
 import hotvect.hotvectjar
+from hotvect.jvm_args import normalize_pipeline_jvm_options
 from hotvect.utils import (
     as_locally_available_content,
     clean_dir,
@@ -949,9 +950,7 @@ class AlgorithmPipeline:
             "-cp",
             f"{hotvect.hotvectjar.HOTVECT_JAR_PATH}",
         ]
-        resolved_jvm_args = (
-            _get_jvm_args(self.algorithm_definition, task_name, self.algorithm_pipeline_context.jvm_options) or []
-        )
+        resolved_jvm_args = _get_jvm_args(self.algorithm_definition, task_name, self.algorithm_pipeline_context.jvm_options)
         ret.extend(resolved_jvm_args)
         if "-XX:+ExitOnOutOfMemoryError" not in resolved_jvm_args:
             ret.append("-XX:+ExitOnOutOfMemoryError")
@@ -1696,7 +1695,7 @@ class AlgorithmPipeline:
 
 def _get_jvm_args(
     algorithm_definition: Dict[str, Any], task_name: str, jvm_args: Optional[List[str]]
-) -> Optional[List[str]]:
+) -> List[str]:
     execution_parameters = algorithm_definition.get("hotvect_execution_parameters", {})
     task_names = [task_name]
     if task_name in {"generate-state", "generate_state"}:
@@ -1721,7 +1720,8 @@ def _get_jvm_args(
             for arg in arg_set:
                 if "-cp" in arg or "-classpath" in arg:
                     raise ValueError("You cannot modify the classpath through override")
-            return arg_set
+            return normalize_pipeline_jvm_options(arg_set)
+    return normalize_pipeline_jvm_options(None)
 
 
 def _recursive_get(dx: Dict[Any, Any], keys: List[str], default: Any = None):

@@ -78,6 +78,38 @@ def test_hv_serve_uses_algorithm_demo_server(monkeypatch):
     assert captured["env"] is None
 
 
+def test_hv_serve_uses_default_runtime_jvm_args_without_passthrough(monkeypatch):
+    hv = _load_hv_module()
+    captured = {}
+
+    monkeypatch.setattr(hv.hotvect.hotvectjar, "HOTVECT_ALGORITHM_DEMO_JAR_PATH", Path("/tmp/demo.jar"))
+
+    def _capture_run(cmd, *, host, port, health_timeout_seconds, health_request_timeout_seconds, env=None):
+        captured["cmd"] = cmd
+
+    monkeypatch.setattr(hv, "_run_http_server_process", _capture_run)
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "hv",
+            "serve",
+            "--algorithm-jar",
+            "algo.jar",
+            "--algorithm-name",
+            "demo-algo",
+            "--parameter-path",
+            "params.zip",
+            "--port",
+            "8080",
+        ],
+    )
+
+    hv.main()
+
+    assert captured["cmd"][1:3] == ["-XX:MaxRAMPercentage=80", "-XX:+ExitOnOutOfMemoryError"]
+
+
 def test_hv_serve_ui_passes_ui_flags(monkeypatch, tmp_path: Path):
     hv = _load_hv_module()
     captured = {}
